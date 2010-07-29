@@ -25,30 +25,41 @@ class PreloadData
 
     url2name = Rack::Request.new(env).params.invert
 
-    EM::Mongo::Connection.new.db(db).collection(cl).
-      find('_id' => {'$in' => url2name.keys}){ |mongoes|
-        debug(env, 'mongoes', mongoes)
-        respond_async(env, ok(build(url2name, extract(url2name, mongoes))))
-      }
+    mongo = EM::Mongo::Connection.new.db(db).collection(cl)
+    mongo.find('_id' => {'$in' => md5s(*url2name.keys)}){ |resource|
+      debug(env, 'resource', resource)
+      respond_async(env, ok(build(url2name,
+                                  extract(url2name, resource),
+                                  mongo)))
+    }
 
     throw :async
   end
 
   protected
-  def fetch id
+  def md5s *urls
+    urls.map{ |url| Digest::MD5.hexdigest(url) }
   end
 
-  def build url2name, name2mongo
-    JSON.dump(url2name.inject({}){ |result, (id, name)|
-      result[name] = name2mongo[name] || fetch(id)
+  def fetch url, mongo
+    rand.to_s.tap{ |val|
+      mongo.insert('_id' => md5s(url).first,
+                   'url' => url,
+                   'val' => val)
+    }
+  end
+
+  def build url2name, name2record, mongo
+    JSON.dump(url2name.inject({}){ |result, (url, name)|
+      result[name] = name2record[name] || fetch(url, mongo)
       result
     })
   end
 
-  def extract url2name, mongoes
-    mongoes.inject({}){ |result, record|
-      result[url2name[record['_id']]] = record
-      result
+  def extract url2name, resource
+    resource.inject({}){ |name2record, record|
+      name2record[url2name[record['url']]] = record['val']
+      name2record
     }
   end
 
