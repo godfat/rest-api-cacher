@@ -1,0 +1,39 @@
+= preload_data 0.1.0
+by Cardinal Blue ( http://cardinalblue.com )
+
+== LINKS:
+
+* {github}[http://github.com/cardinalblue/preload_data]
+* {rubygems}[http://rubygems.org/gems/preload_data]
+* {rdoc}[http://rdoc.info/projects/cardinalblue/preload_data]
+* {mailing list}[http://groups.google.com/group/preload_data/topics]
+
+== DESCRIPTION:
+
+== FEATURES:
+
+== SYNOPSIS:
+
+== REQUIREMENTS:
+
+== INSTALL:
+
+ > gem install preload_data
+
+== LICENSE:
+
+  Apache License 2.0
+
+  Copyright (c) 2010, Cardinal Blue
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
