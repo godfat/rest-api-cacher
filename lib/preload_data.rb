@@ -47,7 +47,7 @@ class PreloadData
     url2name.keys.each{ |url| mul.add(EM::HttpRequest.new(url).get) }
     mul.callback{
       name2val = mul.responses.values.flatten.inject({}){ |result, conn|
-        val, uri = conn.response, conn.uri.to_s
+        val, uri = conn.response, conn.uri.normalize!.to_s
         mongo.insert('_id' => md5s(uri).first,
                      'url' => uri,
                      'val' => val)
