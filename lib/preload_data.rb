@@ -68,7 +68,7 @@ class PreloadData
   end
 
   def respond_async env, body=''
-    env['async.callback'].call(body)
+    env['async.callback'].call(ok(body))
   end
 
   def ok body='"200 OK"'
