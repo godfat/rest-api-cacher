@@ -23,12 +23,12 @@ class PreloadData
     return need_eventmachine if !EM.reactor_running?
     return need_db_or_cl     if db.strip.empty? || cl.strip.empty?
 
-    id2name = Rack::Request.new(env).params.invert
+    url2name = Rack::Request.new(env).params.invert
 
     EM::Mongo::Connection.new.db(db).collection(cl).
-      find('_id' => {'$in' => id2name.keys}){ |mongoes|
+      find('_id' => {'$in' => url2name.keys}){ |mongoes|
         debug(env, 'mongoes', mongoes)
-        respond_async(env, ok(build(id2name, extract(id2name, mongoes))))
+        respond_async(env, ok(build(url2name, extract(url2name, mongoes))))
       }
 
     throw :async
@@ -38,16 +38,16 @@ class PreloadData
   def fetch id
   end
 
-  def build id2name, name2mongo
-    JSON.dump(id2name.inject({}){ |result, (id, name)|
+  def build url2name, name2mongo
+    JSON.dump(url2name.inject({}){ |result, (id, name)|
       result[name] = name2mongo[name] || fetch(id)
       result
     })
   end
 
-  def extract id2name, mongoes
+  def extract url2name, mongoes
     mongoes.inject({}){ |result, record|
-      result[id2name[record['_id']]] = record
+      result[url2name[record['_id']]] = record
       result
     }
   end
