@@ -23,7 +23,10 @@ class PreloadData
     return need_eventmachine if !EM.reactor_running?
     return need_db_or_cl     if db.strip.empty? || cl.strip.empty?
 
-    url2name = Rack::Request.new(env).params.invert
+    url2name = Rack::Request.new(env).params.inject({}){ |result, (name, url)|
+                 result[Addressable::URI.parse(url).normalize!.to_s] = name
+                 result
+               }
 
     mongo = EM::Mongo::Connection.new.db(db).collection(cl)
     mongo.find('_id' => {'$in' => md5s(*url2name.keys)}){ |resource|
