@@ -30,7 +30,6 @@ class PreloadData
 
     mongo = EM::Mongo::Connection.new.db(db).collection(cl)
     mongo.find('_id' => {'$in' => md5s(*url2name.keys)}){ |resource|
-      debug(env, 'resource', resource)
       build(env, url2name, extract(url2name, resource), mongo)
     }
 
