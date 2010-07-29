@@ -31,9 +31,7 @@ class PreloadData
     mongo = EM::Mongo::Connection.new.db(db).collection(cl)
     mongo.find('_id' => {'$in' => md5s(*url2name.keys)}){ |resource|
       debug(env, 'resource', resource)
-      respond_async(env, ok(build(url2name,
-                                  extract(url2name, resource),
-                                  mongo)))
+      build(env, url2name, extract(url2name, resource), mongo)
     }
 
     throw :async
@@ -44,19 +42,36 @@ class PreloadData
     urls.map{ |url| Digest::MD5.hexdigest(url) }
   end
 
-  def fetch url, mongo
-    rand.to_s.tap{ |val|
-      mongo.insert('_id' => md5s(url).first,
-                   'url' => url,
-                   'val' => val)
+  def fetch env, mongo, partial, url2name
+    mul = EM::MultiRequest.new
+    url2name.keys.each{ |url| mul.add(EM::HttpRequest.new(url).get) }
+    mul.callback{
+      name2val = mul.responses.values.flatten.inject({}){ |result, conn|
+        val, uri = conn.response, conn.uri.to_s
+        mongo.insert('_id' => md5s(uri).first,
+                     'url' => uri,
+                     'val' => val)
+        result[url2name[uri]] = val
+        result
+      }
+      respond_async(env, JSON.dump(partial.merge(name2val)))
     }
   end
 
-  def build url2name, name2record, mongo
-    JSON.dump(url2name.inject({}){ |result, (url, name)|
-      result[name] = name2record[name] || fetch(url, mongo)
-      result
-    })
+  def build env, url2name, name2record, mongo
+    partial = url2name.inject({}){ |result, (url, name)|
+                result[name] = name2record[name]
+                result
+              }
+    missing = partial.select{ |name, record| record.nil? }
+
+    if missing.empty?
+      respond_async(env, JSON.dump(partial))
+    else
+      fetch(env, mongo, partial, url2name.select{ |url, name|
+                                   missing.has_key?(name)
+                                 })
+    end
   end
 
   def extract url2name, resource
