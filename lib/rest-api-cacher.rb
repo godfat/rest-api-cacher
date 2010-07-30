@@ -17,68 +17,110 @@ require 'em-http-request'
 }
 
 class RestApiCacher
+  class Params
+    attr_reader   :url2name, :env
+    attr_accessor :records
+    def initialize env
+      @env      = env
+      @url2name =
+        Rack::Request.new(env).params.inject({}){ |result, (name, url)|
+          result[Addressable::URI.parse(url).normalize!.to_s] = name
+          result
+        }
+    end
+
+    def urls
+      @urls ||= url2name.keys
+    end
+
+    def _ids us=urls
+      us.map{ |u| Digest::MD5.hexdigest(u) }
+    end
+
+    def name2record
+      @name2record ||= build_name2record
+    end
+
+    def name2record_hit
+      @cache_hit ||= build_name2record_hit
+    end
+
+    def name2record_miss
+      @cache_miss ||= name2record_hit.select{ |name, record| record.nil? }
+    end
+
+    def url2name_miss
+      @url2name_miss ||= build_url2name_miss
+    end
+
+    protected
+    def build_name2record
+      records.inject({}){ |name2record, record|
+        name2record[url2name[record['url']]] = record['val']
+        name2record
+      }
+    end
+
+    def build_name2record_hit
+      url2name.inject({}){ |result, (url, name)|
+        result[name] = name2record[name]
+        result
+      }
+    end
+
+    def build_url2name_miss
+      url2name.select{ |url, name| name2record_miss.has_key?(name) }
+    end
+  end
+
   def call env
     db, cl = env['PATH_INFO'][1..-1].split('/', 2)
 
     return need_eventmachine if !EM.reactor_running?
     return need_db_or_cl     if db.strip.empty? || cl.strip.empty?
 
-    url2name = Rack::Request.new(env).params.inject({}){ |result, (name, url)|
-                 result[Addressable::URI.parse(url).normalize!.to_s] = name
-                 result
-               }
+    params = Params.new(env)
 
     mongo = EM::Mongo::Connection.new.db(db).collection(cl)
-    mongo.find('_id' => {'$in' => md5s(*url2name.keys)}){ |resource|
-      build(env, url2name, extract(url2name, resource), mongo)
+    mongo.find('_id' => {'$in' => params._ids}){ |records|
+      params.records = records
+      build(env, mongo, params)
     }
 
     throw :async
   end
 
   protected
-  def md5s *urls
-    urls.map{ |url| Digest::MD5.hexdigest(url) }
-  end
+  def build env, mongo, params
+    debug(env, 'Cache  Hit:', params.name2record_hit .keys)
+    debug(env, 'Cache Miss:', params.name2record_miss.keys)
 
-  def fetch env, mongo, partial, url2name
-    mul = EM::MultiRequest.new
-    url2name.keys.each{ |url| mul.add(EM::HttpRequest.new(url).get) }
-    mul.callback{
-      name2val = mul.responses.values.flatten.inject({}){ |result, conn|
-        val, uri = conn.response, conn.uri.normalize!.to_s
-        mongo.insert('_id' => md5s(uri).first,
-                     'url' => uri,
-                     'val' => val)
-        result[url2name[uri]] = val
-        result
-      }
-      respond_async(env, JSON.dump(partial.merge(name2val)))
-    }
-  end
-
-  def build env, url2name, name2record, mongo
-    partial = url2name.inject({}){ |result, (url, name)|
-                result[name] = name2record[name]
-                result
-              }
-    missing = partial.select{ |name, record| record.nil? }
-
-    if missing.empty?
-      respond_async(env, JSON.dump(partial))
+    if params.name2record_miss.empty?
+      respond_async(env, JSON.dump(params.name2record_hit))
     else
-      fetch(env, mongo, partial, url2name.select{ |url, name|
-                                   missing.has_key?(name)
-                                 })
+      fetch(env, mongo, params)
     end
   end
 
-  def extract url2name, resource
-    resource.inject({}){ |name2record, record|
-      name2record[url2name[record['url']]] = record['val']
-      name2record
+  def fetch env, mongo, params
+    mul = EM::MultiRequest.new
+    params.url2name_miss.keys.each{ |url|
+      mul.add(EM::HttpRequest.new(url).get)
+    }
+    mul.callback{
+      name2val = mul.responses.values.flatten.inject({}){ |result, conn|
+        val, uri = conn.response, conn.uri.normalize!.to_s
+        mongo.insert('_id' => params._ids([uri]).first,
+                     'url' => uri,
+                     'val' => val)
+        result[params.url2name_miss[uri]] = val
+        result
+      }
+      respond_async(env, JSON.dump(params.name2record_miss.merge(name2val)))
     }
   end
+
+  # -----
 
   def debug env, *args
     env['rack.logger'].debug(args.join(' - '))
