@@ -9,8 +9,8 @@ Gem::Specification.new do |s|
   s.date = %q{2010-07-30}
   s.description = %q{}
   s.email = %q{dev (XD) cardinalblue.com}
-  s.extra_rdoc_files = ["CHANGES", "Gemfile", "README", "config.ru", "start.sh"]
-  s.files = ["CHANGES", "Gemfile", "README", "README.rdoc", "Rakefile", "config.ru", "lib/rest-api-cacher.rb", "lib/rest-api-cacher/version.rb", "rainbows.rb", "start.sh"]
+  s.extra_rdoc_files = ["CHANGES", "Gemfile", "README", "config.ru", "rest-api-cacher.gemspec", "start.sh"]
+  s.files = ["CHANGES", "Gemfile", "README", "README.rdoc", "Rakefile", "config.ru", "lib/rest-api-cacher.rb", "lib/rest-api-cacher/params.rb", "lib/rest-api-cacher/version.rb", "rainbows.rb", "rest-api-cacher.gemspec", "start.sh"]
   s.homepage = %q{http://github.com/cardinalblue/rest-api-cacher}
   s.rdoc_options = ["--main", "README.rdoc"]
   s.require_paths = ["lib"]
@@ -24,9 +24,11 @@ Gem::Specification.new do |s|
 
     if Gem::Version.new(Gem::VERSION) >= Gem::Version.new('1.2.0') then
       s.add_runtime_dependency(%q<rack>, [">= 1.2.1"])
+      s.add_runtime_dependency(%q<async-rack>, [">= 0.5.0"])
       s.add_runtime_dependency(%q<eventmachine>, [">= 0.12.10"])
       s.add_runtime_dependency(%q<em-http-request>, [">= 0.2.10"])
       s.add_runtime_dependency(%q<em-mongo>, [">= 0.2.12"])
+      s.add_development_dependency(%q<json>, [">= 1.4.3"])
       s.add_development_dependency(%q<bson_ext>, [">= 1.0.4"])
       s.add_development_dependency(%q<bacon>, [">= 1.1.0"])
       s.add_development_dependency(%q<rr>, [">= 0.10.11"])
@@ -34,9 +36,11 @@ Gem::Specification.new do |s|
       s.add_development_dependency(%q<bones>, [">= 3.4.7"])
     else
       s.add_dependency(%q<rack>, [">= 1.2.1"])
+      s.add_dependency(%q<async-rack>, [">= 0.5.0"])
       s.add_dependency(%q<eventmachine>, [">= 0.12.10"])
       s.add_dependency(%q<em-http-request>, [">= 0.2.10"])
       s.add_dependency(%q<em-mongo>, [">= 0.2.12"])
+      s.add_dependency(%q<json>, [">= 1.4.3"])
       s.add_dependency(%q<bson_ext>, [">= 1.0.4"])
       s.add_dependency(%q<bacon>, [">= 1.1.0"])
       s.add_dependency(%q<rr>, [">= 0.10.11"])
@@ -45,9 +49,11 @@ Gem::Specification.new do |s|
     end
   else
     s.add_dependency(%q<rack>, [">= 1.2.1"])
+    s.add_dependency(%q<async-rack>, [">= 0.5.0"])
     s.add_dependency(%q<eventmachine>, [">= 0.12.10"])
     s.add_dependency(%q<em-http-request>, [">= 0.2.10"])
     s.add_dependency(%q<em-mongo>, [">= 0.2.12"])
+    s.add_dependency(%q<json>, [">= 1.4.3"])
     s.add_dependency(%q<bson_ext>, [">= 1.0.4"])
     s.add_dependency(%q<bacon>, [">= 1.1.0"])
     s.add_dependency(%q<rr>, [">= 0.10.11"])

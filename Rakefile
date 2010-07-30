@@ -16,9 +16,11 @@ Bones{
   version RestApiCacher::VERSION
 
   depend_on 'rack'
+  depend_on 'async-rack'
   depend_on 'eventmachine'
   depend_on 'em-http-request'
   depend_on 'em-mongo'
+  depend_on 'json',     :development => true
   depend_on 'bson_ext', :development => true
 
   depend_on 'bacon',    :development => true
