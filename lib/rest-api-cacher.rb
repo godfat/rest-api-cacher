@@ -51,7 +51,7 @@ class RestApiCacher
       mul.add(EM::HttpRequest.new(url).get)
     }
     mul.callback{
-      name2val = mul.responses.values.flatten.inject({}){ |result, conn|
+      name2val = mul.responses[:succeeded].inject({}){ |result, conn|
         val, uri = conn.response, conn.uri.normalize!.to_s
         mongo.insert('_id' => params._ids([uri]).first,
                      'url' => uri,
