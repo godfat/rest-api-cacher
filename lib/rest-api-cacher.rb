@@ -81,7 +81,7 @@ class RestApiCacher
   end
 
   def debug env, *args
-    env['rack.logger'].debug("#{args.join(' --- ')}")
+    env['rack.logger'].debug(args.join(' - '))
   end
 
   def respond_async env, body=''
