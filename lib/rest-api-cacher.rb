@@ -35,11 +35,11 @@ class RestApiCacher
 
   protected
   def build env, mongo, params
-    debug(env, 'Cache  Hit:', params.name2record_hit .keys)
-    debug(env, 'Cache Miss:', params.name2record_miss.keys)
+    debug(env, 'Cache  Hit:', params.name2record.keys)
+    debug(env, 'Cache Miss:', params.name2record_miss)
 
     if params.name2record_miss.empty?
-      respond_async(env, JSON.dump(params.name2record_hit))
+      respond_async(env, JSON.dump(params.name2record))
     else
       fetch(env, mongo, params)
     end
@@ -59,7 +59,7 @@ class RestApiCacher
         result[params.url2name_miss[uri]] = val
         result
       }
-      respond_async(env, JSON.dump(params.name2record_miss.merge(name2val)))
+      respond_async(env, JSON.dump(params.name2record.merge(name2val)))
     }
   end
 
