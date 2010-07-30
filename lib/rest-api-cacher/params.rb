@@ -48,7 +48,9 @@ class RestApiCacher
     end
 
     def build_url2name_miss
-      url2name.select{ |url, name| name2record_miss.member?(name) }
+      result = url2name.select{ |url, name| name2record_miss.member?(name) }
+      return result if result.kind_of?(Hash) # RUBY_VERSION >= 1.9.1
+      result.inject({}){ |r, (k, v)| r[k] = v; r }
     end
   end
 end

@@ -24,5 +24,6 @@ describe RestApiCacher::Params do
     params.records = records
     params.name2record     .should == {'n1' => val}
     params.name2record_miss.should == ['n0']
+    params.   url2name_miss.should == {u0 => 'n0'}
   end
 end
