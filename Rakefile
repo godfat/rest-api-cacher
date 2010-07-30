@@ -7,13 +7,13 @@ rescue LoadError
 end
 
 ensure_in_path 'lib'
-proj = 'preload_data'
+proj = 'rest-api-cacher'
 require "#{proj}/version"
 
 Bones{
   ruby_opts [''] # silence warning for now
 
-  version PreloadData::VERSION
+  version RestApiCacher::VERSION
 
   depend_on 'rack'
   depend_on 'eventmachine'

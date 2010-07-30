@@ -16,7 +16,7 @@ require 'em-http-request'
   end
 }
 
-class PreloadData
+class RestApiCacher
   def call env
     db, cl = env['PATH_INFO'][1..-1].split('/', 2)
 

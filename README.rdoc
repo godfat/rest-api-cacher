@@ -1,12 +1,12 @@
-= preload_data 0.1.0
+= rest-api-cacher 0.1.0
 by Cardinal Blue ( http://cardinalblue.com )
 
 == LINKS:
 
-* {github}[http://github.com/cardinalblue/preload_data]
-* {rubygems}[http://rubygems.org/gems/preload_data]
-* {rdoc}[http://rdoc.info/projects/cardinalblue/preload_data]
-* {mailing list}[http://groups.google.com/group/preload_data/topics]
+* {github}[http://github.com/cardinalblue/rest-api-cacher]
+* {rubygems}[http://rubygems.org/gems/rest-api-cacher]
+* {rdoc}[http://rdoc.info/projects/cardinalblue/rest-api-cacher]
+* {mailing list}[http://groups.google.com/group/rest-api-cacher/topics]
 
 == DESCRIPTION:
 
@@ -18,7 +18,7 @@ by Cardinal Blue ( http://cardinalblue.com )
 
 == INSTALL:
 
- > gem install preload_data
+ > gem install rest-api-cacher
 
 == LICENSE:
 

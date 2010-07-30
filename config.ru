@@ -1,6 +1,6 @@
 
-require 'preload_data'
+require 'rest-api-cacher'
 
 use Rack::Reloader
 use Rack::ContentLength
-run PreloadData.new
+run RestApiCacher.new

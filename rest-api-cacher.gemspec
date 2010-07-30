@@ -1,20 +1,20 @@
 # -*- encoding: utf-8 -*-
 
 Gem::Specification.new do |s|
-  s.name = %q{preload_data}
+  s.name = %q{rest-api-cacher}
   s.version = "0.1.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Cardinal Blue", "Lin Jen-Shin (aka godfat 真常)"]
-  s.date = %q{2010-07-29}
+  s.date = %q{2010-07-30}
   s.description = %q{}
   s.email = %q{dev (XD) cardinalblue.com}
-  s.extra_rdoc_files = ["CHANGES", "Gemfile", "README", "config.ru"]
-  s.files = ["CHANGES", "Gemfile", "README", "README.rdoc", "Rakefile", "config.ru", "lib/preload_data.rb", "lib/preload_data/version.rb"]
-  s.homepage = %q{http://github.com/cardinalblue/preload_data}
+  s.extra_rdoc_files = ["CHANGES", "Gemfile", "README", "config.ru", "start.sh"]
+  s.files = ["CHANGES", "Gemfile", "README", "README.rdoc", "Rakefile", "config.ru", "lib/rest-api-cacher.rb", "lib/rest-api-cacher/version.rb", "rainbows.rb", "start.sh"]
+  s.homepage = %q{http://github.com/cardinalblue/rest-api-cacher}
   s.rdoc_options = ["--main", "README.rdoc"]
   s.require_paths = ["lib"]
-  s.rubyforge_project = %q{preload_data}
+  s.rubyforge_project = %q{rest-api-cacher}
   s.rubygems_version = %q{1.3.7}
   s.summary = nil
 
