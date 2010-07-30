@@ -78,7 +78,7 @@ class RestApiCacher
   end
 
   def need_db_or_cl
-    [400, headers_text, ["Usage: GET /database/collection\n"]]
+    [400, headers_text, ["Usage: GET /database/collection?key=url\n"]]
   end
 
   def need_eventmachine
