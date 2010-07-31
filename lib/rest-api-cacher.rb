@@ -46,12 +46,10 @@ class RestApiCacher
   end
 
   def fetch env, mongo, params
-    mul = EM::MultiRequest.new
-    params.url2name_miss.keys.each{ |url|
-      mul.add(EM::HttpRequest.new(url).get)
-    }
-    mul.callback{
-      name2val = mul.responses[:succeeded].inject({}){ |result, conn|
+    EM::MultiRequest.new(params.url2name_miss.keys.map{ |url|
+      EM::HttpRequest.new(url).get
+    }){ |reqs|
+      name2val = reqs.responses[:succeeded].inject({}){ |result, conn|
         val, uri = conn.response, conn.uri.normalize!.to_s
         mongo.insert('_id' => params._ids([uri]).first,
                      'url' => uri,
